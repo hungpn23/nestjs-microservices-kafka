@@ -1,5 +1,5 @@
 import { Public } from '@libs/decorators/auth/public.decorator';
-import { RegisterDto } from '@libs/user.dto';
+import { RegisterDto } from '@libs/dtos/user.dto';
 import { Body, Controller, HttpException, Inject, Post } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { catchError, firstValueFrom, throwError } from 'rxjs';
