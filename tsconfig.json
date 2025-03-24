@@ -25,7 +25,7 @@
     "esModuleInterop": true,
     "importHelpers": true,
     "paths": {
-      "@api/*": ["apps/gateway/*"],
+      "@gateway/*": ["apps/gateway/*"],
       "@user/*": ["apps/user/*"],
       "@product/*": ["apps/product/*"],
       "@libs/*": ["libs/*"]
