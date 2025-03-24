@@ -1,7 +1,7 @@
 import { Transform } from 'class-transformer';
 
 export function ToLowerCase(): PropertyDecorator {
-  return Transform(({ value }) => {
+  return Transform(({ value }: { value: string }) => {
     if (!value) return;
 
     if (Array.isArray(value)) {
@@ -13,7 +13,7 @@ export function ToLowerCase(): PropertyDecorator {
 }
 
 export function ToUpperCase(): PropertyDecorator {
-  return Transform(({ value }) => {
+  return Transform(({ value }: { value: string }) => {
     if (!value) return;
 
     if (Array.isArray(value)) {
@@ -25,7 +25,7 @@ export function ToUpperCase(): PropertyDecorator {
 }
 
 export function ToBoolean(): PropertyDecorator {
-  return Transform(({ value }) => {
+  return Transform(({ value }: { value: string | boolean }) => {
     switch (value) {
       case 'true':
         return true;

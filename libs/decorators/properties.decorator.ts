@@ -18,7 +18,6 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { ToBoolean, ToLowerCase, ToUpperCase } from './transforms.decorator';
-import { IsPassword } from './validators/is-password.decorator';
 
 type CommonOptions = {
   isArray?: boolean; // to check if prop is an array & to validate each items in array
@@ -117,10 +116,7 @@ export function UrlValidators(
 }
 
 export function PasswordValidators(options?: StringOptions): PropertyDecorator {
-  let decorators = [
-    StringValidators({ ...options, minLength: 8 }),
-    IsPassword(),
-  ];
+  let decorators = [StringValidators({ ...options, minLength: 8 })];
 
   decorators = checkCommonOptions(decorators, options);
 
