@@ -6,7 +6,7 @@ import { UserController } from './user.controller';
   imports: [
     ClientsModule.register([
       {
-        name: 'USER_MS',
+        name: 'USER',
         transport: Transport.KAFKA,
         options: {
           client: {

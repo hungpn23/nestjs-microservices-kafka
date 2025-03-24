@@ -6,7 +6,7 @@ import { catchError, firstValueFrom, throwError } from 'rxjs';
 
 @Controller('user')
 export class UserController {
-  constructor(@Inject('USER_MS') private readonly userClient: ClientKafka) {}
+  constructor(@Inject('USER') private readonly userClient: ClientKafka) {}
 
   onModuleInit() {
     this.userClient.subscribeToResponseOf('user.register');
