@@ -5,8 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DatabaseNamingStrategy } from '@user/database/name-strategy';
 import { TypeOrmConfigService } from '@user/database/typeorm-config.service';
 import { DataSource } from 'typeorm';
-import { UserController } from './user.controller';
-import { UserService } from './user.service';
+import { UserModule } from './main/user.module';
 
 @Module({
   imports: [
@@ -22,14 +21,14 @@ import { UserService } from './user.service';
         }).initialize();
       },
     }),
+
+    UserModule,
   ],
-  controllers: [UserController],
   providers: [
-    UserService,
     {
       provide: APP_FILTER,
       useClass: GlobalExceptionsFilter,
     },
   ],
 })
-export class UserModule {}
+export class AppModule {}
