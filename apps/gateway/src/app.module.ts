@@ -14,12 +14,14 @@ import { AuthGuard } from './auth.guard';
 import appConfig from './configs/app.config';
 import authConfig from './configs/auth.config';
 import redisConfig, { RedisEnvVariables } from './configs/redis.config';
-import { GlobalExceptionFilter } from './global-exception.filter';
+import { GatewayExceptionFilter } from './exception.filter';
 import { ProductModule } from './product/product.module';
 import { UserModule } from './user/user.module';
 
 const envFilePath =
-  process.env.NODE_ENV === 'production' ? '.env.prod' : '.env.dev';
+  process.env.NODE_ENV === 'production'
+    ? 'apps/gateway/.env.prod'
+    : 'apps/gateway/.env.local';
 
 @Module({
   imports: [
@@ -76,7 +78,7 @@ const envFilePath =
     },
     {
       provide: APP_FILTER,
-      useClass: GlobalExceptionFilter,
+      useClass: GatewayExceptionFilter,
     },
   ],
 })

@@ -15,6 +15,9 @@ async function bootstrap() {
         consumer: {
           groupId: 'user-consumer',
         },
+        run: {
+          autoCommit: false,
+        },
       },
     },
   );

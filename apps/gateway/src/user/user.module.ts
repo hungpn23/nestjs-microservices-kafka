@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { UserController } from './user.controller';
+import { UserService } from './user.service';
 
 @Module({
   imports: [
     ClientsModule.register([
       {
-        name: 'USER',
+        name: 'USER_CLIENT',
         transport: Transport.KAFKA,
         options: {
           client: {
@@ -21,5 +22,6 @@ import { UserController } from './user.controller';
     ]),
   ],
   controllers: [UserController],
+  providers: [UserService],
 })
 export class UserModule {}
