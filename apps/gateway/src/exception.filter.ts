@@ -26,8 +26,8 @@ class ErrorDetailDto {
 }
 
 @Catch()
-export class GlobalExceptionFilter implements ExceptionFilter {
-  private readonly logger = new Logger(GlobalExceptionFilter.name);
+export class GatewayExceptionFilter implements ExceptionFilter {
+  private readonly logger = new Logger(GatewayExceptionFilter.name);
 
   catch(exception: unknown, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
