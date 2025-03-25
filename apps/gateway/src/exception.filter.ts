@@ -35,13 +35,13 @@ export class GatewayExceptionFilter implements ExceptionFilter {
 
     let error: ErrorDto;
 
-    this.logger.error(exception);
-
     if (exception instanceof UnprocessableEntityException) {
       // this exception is thrown from main.ts (ValidationPipe)
       error = this.handleUnprocessableEntityException(exception);
     } else if (exception instanceof HttpException) {
       error = this.handleHttpException(exception);
+    } else if (typeof exception === 'string') {
+      error = this.handleRpcException(exception);
     } else {
       error = this.handleError(exception);
     }
@@ -68,6 +68,14 @@ export class GatewayExceptionFilter implements ExceptionFilter {
       timestamp: new Date().toISOString(),
       statusCode: exception.getStatus(),
       message: exception.message,
+    } satisfies ErrorDto);
+  }
+
+  private handleRpcException(exception: string) {
+    return plainToInstance(ErrorDto, {
+      timestamp: new Date().toISOString(),
+      statusCode: HttpStatus.BAD_REQUEST,
+      message: exception,
     } satisfies ErrorDto);
   }
 
