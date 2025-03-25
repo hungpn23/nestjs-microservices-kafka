@@ -1,0 +1,70 @@
+# docker compose -f compose.local.yml --env-file .env.docker up -d
+services:
+  kafka:
+    image: bitnami/kafka:latest
+    container_name: kafka
+    ports:
+      - '9092:9092'
+      - '9093:9093'
+    environment:
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+
+  user_db:
+    image: postgres:17.4
+    container_name: user_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${USER_DB_USERNAME}
+      POSTGRES_PASSWORD: ${USER_DB_PASSWORD}
+      POSTGRES_DB: ${USER_DB_NAME}
+    ports:
+      - '15432:5432'
+    volumes:
+      - user_db:/var/lib/postgresql/data
+    networks:
+      - microservices
+
+  product_db:
+    image: postgres:17.4
+    container_name: product_db
+    restart: unless-stopped
+    environment:
+      environment:
+      POSTGRES_USER: ${PRODUCT_DB_USERNAME}
+      POSTGRES_PASSWORD: ${PRODUCT_DB_PASSWORD}
+      POSTGRES_DB: ${PRODUCT_DB_NAME}
+    ports:
+      - '25432:5432'
+    volumes:
+      - product_db:/var/lib/postgresql/data
+    networks:
+      - microservices
+
+  gateway_redis:
+    image: redis/redis-stack:6.2.6-v17
+    container_name: gateway_redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+      - '8001:8001'
+    environment:
+      REDIS_ARGS: '--user default off --user ${GATEWAY_REDIS_USERNAME} on >${GATEWAY_REDIS_PASSWORD} ${GATEWAY_REDIS_PERMISSIONS}'
+    volumes:
+      - gateway_redis:/data
+    networks:
+      - microservices
+
+volumes:
+  user_db:
+  product_db:
+  gateway_redis:
+
+networks:
+  microservices:
+    driver: bridge
