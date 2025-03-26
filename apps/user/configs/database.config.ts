@@ -1,6 +1,7 @@
 import {
   BooleanValidators,
   NumberValidators,
+  PortValidators,
   StringValidators,
 } from '@libs/decorators/properties.decorator';
 import { validateConfig } from '@libs/utils/validate-config';
@@ -10,6 +11,9 @@ import process from 'node:process';
 export class DatabaseEnvVariables {
   @StringValidators()
   POSTGRES_HOST: string;
+
+  @PortValidators()
+  POSTGRES_PORT: number;
 
   @StringValidators()
   POSTGRES_USER: string;
@@ -51,6 +55,7 @@ export default () => {
 
   return {
     POSTGRES_HOST: process.env.POSTGRES_HOST,
+    POSTGRES_PORT: parseInt(process.env.POSTGRES_PORT || '5432'),
     POSTGRES_USER: process.env.POSTGRES_USER,
     POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD,
     POSTGRES_DB: process.env.POSTGRES_DB,

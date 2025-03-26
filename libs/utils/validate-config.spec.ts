@@ -1,12 +1,14 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  NumberValidators,
+  StringValidators,
+} from '@libs/decorators/properties.decorator';
 import { validateConfig } from './validate-config';
 
 class TestConfig {
-  @IsString()
-  @IsNotEmpty()
+  @StringValidators()
   name: string;
 
-  @IsNumber()
+  @NumberValidators()
   age: number;
 }
 
