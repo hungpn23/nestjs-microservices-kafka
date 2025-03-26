@@ -5,7 +5,7 @@ import {
 } from '@libs/decorators/properties.decorator';
 
 export class RegisterDto {
-  @StringValidators({ minLength: 6, maxLength: 20, required: true })
+  @StringValidators({ minLength: 6, maxLength: 20 })
   username: string;
 
   @EmailValidators()
@@ -14,3 +14,16 @@ export class RegisterDto {
   @PasswordValidators()
   password: string;
 }
+
+export class LoginDto {
+  @EmailValidators()
+  email: string;
+
+  @PasswordValidators()
+  password: string;
+}
+
+export type TokenPair = {
+  accessToken: string;
+  refreshToken: string;
+};

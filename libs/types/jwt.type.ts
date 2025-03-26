@@ -3,7 +3,6 @@ import { Seconds, UUID } from '@libs/types/branded.type';
 
 type BaseJwtPayload = {
   sessionId: UUID;
-  iat?: number;
   exp?: Seconds;
 };
 

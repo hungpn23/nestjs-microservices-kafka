@@ -1,7 +1,8 @@
-import { RegisterDto } from '@libs/dtos/user.dto';
-import { Seconds } from '@libs/types/branded.type';
+import { LoginDto, RegisterDto, TokenPair } from '@libs/dtos/user.dto';
+import { Seconds, UUID } from '@libs/types/branded.type';
 import { JwtPayload, RefreshPayload } from '@libs/types/jwt.type';
-import { Injectable } from '@nestjs/common';
+import { ReplyStatus } from '@libs/types/kafka.type';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { KafkaContext } from '@nestjs/microservices';
@@ -40,6 +41,51 @@ export class UserService {
 
       const tokenPair = await this.createTokenPair(user);
       return { value: JSON.stringify(tokenPair) };
+    } finally {
+      await this.commitOffsets(context);
+    }
+  }
+
+  async handleUserLogin({ email, password }: LoginDto, context: KafkaContext) {
+    try {
+      const user = await UserEntity.findOneBy({ email });
+
+      const isCredentialsValid =
+        user && (await this.verifyPassword(user.password ?? '', password));
+
+      if (!isCredentialsValid)
+        throw new BadRequestException('invalid credentials');
+
+      const tokenPair = await this.createTokenPair(user);
+      return { value: JSON.stringify(tokenPair) };
+    } finally {
+      await this.commitOffsets(context);
+    }
+  }
+
+  async handleUserLogout(sessionId: UUID, context: KafkaContext) {
+    try {
+      console.log(
+        '🚀 ~ UserService ~ handleUserLogout ~ sessionId:',
+        sessionId,
+      );
+      const session = await SessionEntity.findOneByOrFail({ id: sessionId });
+      await SessionEntity.remove(session);
+
+      return {
+        value: JSON.stringify({ status: 'success' } satisfies ReplyStatus),
+      };
+    } finally {
+      await this.commitOffsets(context);
+    }
+  }
+
+  async handleBlacklistDetected(userId: UUID, context: KafkaContext) {
+    try {
+      const sessions = await SessionEntity.findBy({
+        user: { id: userId },
+      });
+      await SessionEntity.remove(sessions);
     } finally {
       await this.commitOffsets(context);
     }
@@ -100,7 +146,7 @@ export class UserService {
       ),
     ]);
 
-    return { accessToken, refreshToken };
+    return { accessToken, refreshToken } satisfies TokenPair;
   }
 
   private async verifyPassword(

@@ -11,6 +11,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
+import { ClientKafka } from '@nestjs/microservices';
 import { Request as ExpressRequest } from 'express';
 import { AuthEnvVariables } from './configs/auth.config';
 
@@ -20,6 +21,7 @@ export class AuthGuard implements CanActivate {
     private readonly reflector: Reflector,
     private readonly authConfig: ConfigService<AuthEnvVariables, true>,
     private readonly jwtService: JwtService,
+    @Inject('USER_CLIENT') private readonly userClient: ClientKafka,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
 
@@ -66,11 +68,10 @@ export class AuthGuard implements CanActivate {
     );
 
     if (isBlacklisted) {
-      // const sessions = await SessionEntity.findBy({
-      //   user: { id: userId },
-      // });
-      // await SessionEntity.remove(sessions);
-      // TODO: emit event to remove all sessions of the user
+      this.userClient.emit('user.blacklist_detected', {
+        value: userId,
+      });
+
       throw new UnauthorizedException('blacklist detected');
     }
 

@@ -1,5 +1,7 @@
 import { Public } from '@libs/decorators/auth/public.decorator';
-import { RegisterDto } from '@libs/dtos/user.dto';
+import { Payload } from '@libs/decorators/jwt-payload.decorator';
+import { LoginDto, RegisterDto } from '@libs/dtos/user.dto';
+import { JwtPayload } from '@libs/types/jwt.type';
 import { Body, Controller, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 
@@ -11,5 +13,16 @@ export class UserController {
   @Post('register')
   async register(@Body() dto: RegisterDto) {
     return await this.userService.register(dto);
+  }
+
+  @Public()
+  @Post('login')
+  async login(@Body() dto: LoginDto) {
+    return await this.userService.login(dto);
+  }
+
+  @Post('logout')
+  async logout(@Payload() payload: JwtPayload) {
+    return await this.userService.logout(payload);
   }
 }
