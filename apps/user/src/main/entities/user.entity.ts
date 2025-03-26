@@ -9,6 +9,7 @@ import {
   PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
+import { AddressEntity } from './address.entity';
 import { SessionEntity } from './session.entity';
 
 @Entity('user')
@@ -45,4 +46,9 @@ export class UserEntity extends AbstractEntity {
 
   @OneToMany(() => SessionEntity, (session) => session.user, { cascade: true })
   sessions: Relation<SessionEntity[]>;
+
+  @OneToMany(() => AddressEntity, (address) => address.user, {
+    cascade: true,
+  })
+  addresses: Relation<SessionEntity[]>;
 }

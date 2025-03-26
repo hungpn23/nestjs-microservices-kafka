@@ -41,7 +41,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
         infer: true,
       }),
       entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-      migrations: [__dirname + '/../**/migrations/**/*.{.ts,.js}'],
+      migrations: [__dirname + '/migrations/**/*.{.ts,.js}'],
 
       // ref: https://node-postgres.com/features/ssl
       ssl: this.databaseConfig.get('POSTGRES_SSL_ENABLED', { infer: true })
