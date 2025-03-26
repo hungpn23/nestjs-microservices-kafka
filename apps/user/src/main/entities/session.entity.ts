@@ -1,6 +1,6 @@
+import { UUID } from '@libs/types/branded.type';
 import { AbstractEntity } from '@user/database/entities/abstract.entity';
 import { Exclude } from 'class-transformer';
-import { UUID } from 'crypto';
 import {
   Column,
   Entity,

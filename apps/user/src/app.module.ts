@@ -2,7 +2,9 @@ import { GlobalExceptionsFilter } from '@libs/filters/global-exception.filter';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
+import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import authConfig from '@user/configs/auth.config';
 import databaseConfig from '@user/configs/database.config';
 import { DatabaseNamingStrategy } from '@user/database/name-strategy';
 import { TypeOrmConfigService } from '@user/database/typeorm-config.service';
@@ -24,6 +26,7 @@ const envFilePath =
       load: [
         // load config factories to validate and transform the config values
         databaseConfig,
+        authConfig,
       ],
     }),
     TypeOrmModule.forRootAsync({
@@ -38,6 +41,7 @@ const envFilePath =
         }).initialize();
       },
     }),
+    JwtModule.register({ global: true }),
 
     UserModule,
   ],
