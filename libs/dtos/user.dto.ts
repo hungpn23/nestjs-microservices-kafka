@@ -13,6 +13,9 @@ export class RegisterDto {
 
   @PasswordValidators()
   password: string;
+
+  @PasswordValidators()
+  confirmPassword: string;
 }
 
 export class LoginDto {
@@ -21,6 +24,17 @@ export class LoginDto {
 
   @PasswordValidators()
   password: string;
+}
+
+export class ChangePasswordDto {
+  @PasswordValidators()
+  oldPassword: string;
+
+  @PasswordValidators()
+  newPassword: string;
+
+  @PasswordValidators()
+  confirmPassword: string;
 }
 
 export type TokenPair = {

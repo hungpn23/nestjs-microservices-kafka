@@ -1,4 +1,9 @@
-import { LoginDto, RegisterDto, TokenPair } from '@libs/dtos/user.dto';
+import {
+  ChangePasswordDto,
+  LoginDto,
+  RegisterDto,
+  TokenPair,
+} from '@libs/dtos/user.dto';
 import { Seconds, UUID } from '@libs/types/branded.type';
 import { JwtPayload, RefreshPayload } from '@libs/types/jwt.type';
 import { ReplyStatus } from '@libs/types/kafka.type';
@@ -21,7 +26,7 @@ export class UserService {
   ) {}
 
   async handleUserRegister(
-    { username, email, password }: RegisterDto,
+    { username, email, password, confirmPassword }: RegisterDto,
     context: KafkaContext,
   ) {
     try {
@@ -30,6 +35,9 @@ export class UserService {
       });
 
       if (found) throw new Error('username or email already exists');
+
+      if (password !== confirmPassword)
+        throw new Error('passwords do not match');
 
       const user = await UserEntity.save(
         new UserEntity({
@@ -65,12 +73,36 @@ export class UserService {
 
   async handleUserLogout(sessionId: UUID, context: KafkaContext) {
     try {
-      console.log(
-        '🚀 ~ UserService ~ handleUserLogout ~ sessionId:',
-        sessionId,
-      );
       const session = await SessionEntity.findOneByOrFail({ id: sessionId });
       await SessionEntity.remove(session);
+
+      return {
+        value: JSON.stringify({ status: 'success' } satisfies ReplyStatus),
+      };
+    } finally {
+      await this.commitOffsets(context);
+    }
+  }
+
+  async handleChangePassword(
+    payload: { userId: UUID; dto: ChangePasswordDto },
+    context: KafkaContext,
+  ) {
+    try {
+      const { oldPassword, newPassword, confirmPassword } = payload.dto;
+
+      if (newPassword !== confirmPassword)
+        throw new Error('passwords do not match');
+
+      const user = await UserEntity.findOneByOrFail({ id: payload.userId });
+      if (!user.password) throw new Error('password not set');
+
+      const isValid = await this.verifyPassword(user.password, oldPassword);
+      if (!isValid) throw new Error('old password is incorrect');
+
+      await UserEntity.update(user.id, {
+        password: await argon2.hash(newPassword),
+      });
 
       return {
         value: JSON.stringify({ status: 'success' } satisfies ReplyStatus),

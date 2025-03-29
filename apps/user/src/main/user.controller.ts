@@ -1,4 +1,4 @@
-import { LoginDto, RegisterDto } from '@libs/dtos/user.dto';
+import { ChangePasswordDto, LoginDto, RegisterDto } from '@libs/dtos/user.dto';
 import { UUID } from '@libs/types/branded.type';
 import { Controller } from '@nestjs/common';
 import {
@@ -36,6 +36,14 @@ export class UserController {
     @Ctx() context: KafkaContext,
   ) {
     return await this.userService.handleUserLogout(sessionId, context);
+  }
+
+  @MessagePattern('user.password.change')
+  async handleChangePassword(
+    @Payload() payload: { userId: UUID; dto: ChangePasswordDto },
+    @Ctx() context: KafkaContext,
+  ) {
+    return await this.userService.handleChangePassword(payload, context);
   }
 
   @EventPattern('user.blacklist_detected')

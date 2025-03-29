@@ -1,4 +1,9 @@
-import { LoginDto, RegisterDto, TokenPair } from '@libs/dtos/user.dto';
+import {
+  ChangePasswordDto,
+  LoginDto,
+  RegisterDto,
+  TokenPair,
+} from '@libs/dtos/user.dto';
 import { Milliseconds } from '@libs/types/branded.type';
 import { JwtPayload } from '@libs/types/jwt.type';
 import { ReplyStatus } from '@libs/types/kafka.type';
@@ -18,6 +23,7 @@ export class UserService {
     this.userClient.subscribeToResponseOf('user.register');
     this.userClient.subscribeToResponseOf('user.login');
     this.userClient.subscribeToResponseOf('user.logout');
+    this.userClient.subscribeToResponseOf('user.password.change');
   }
 
   async register(dto: RegisterDto) {
@@ -49,5 +55,20 @@ export class UserService {
     });
 
     return await firstValueFrom(observable);
+  }
+
+  async changePassword(userId: string, dto: ChangePasswordDto) {
+    const observable = this.userClient.send<ReplyStatus>(
+      'user.password.change',
+      {
+        value: JSON.stringify({ userId, dto }),
+      },
+    );
+
+    return await firstValueFrom(observable);
+  }
+
+  async addAddress() {
+    return;
   }
 }
