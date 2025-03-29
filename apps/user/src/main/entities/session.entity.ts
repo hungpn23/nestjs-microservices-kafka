@@ -21,6 +21,9 @@ export class SessionEntity extends AbstractEntity {
   @PrimaryGeneratedColumn('uuid')
   id: UUID;
 
+  @Column({ name: 'user_id', type: 'uuid' })
+  userId: UUID;
+
   @Exclude()
   @Column()
   signature: string;

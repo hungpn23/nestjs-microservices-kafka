@@ -19,6 +19,9 @@ export class DistrictEntity {
   @PrimaryColumn()
   code: number;
 
+  @Column({ name: 'province_code' })
+  provinceCode: number;
+
   @Column()
   name: string;
 

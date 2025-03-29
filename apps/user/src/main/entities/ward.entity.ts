@@ -3,9 +3,11 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryColumn,
   Relation,
 } from 'typeorm';
+import { AddressEntity } from './address.entity';
 import { DistrictEntity } from './district.entity';
 
 @Entity('ward')
@@ -16,6 +18,9 @@ export class WardEntity {
 
   @PrimaryColumn()
   code: number;
+
+  @Column({ name: 'district_code' })
+  districtCode: number;
 
   @Column()
   name: string;
@@ -28,4 +33,9 @@ export class WardEntity {
   })
   @JoinColumn({ name: 'district_code', referencedColumnName: 'code' })
   district: Relation<DistrictEntity>;
+
+  @OneToMany(() => AddressEntity, (address) => address.ward, {
+    cascade: true,
+  })
+  addresses: Relation<AddressEntity[]>;
 }
